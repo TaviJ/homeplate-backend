@@ -16,4 +16,16 @@ router.post("/", async(req,res)=>{
     }
 })
 
+// Get recipes
+router.get("/", async(req,res)=>{
+    try{
+        const recipes = await Recipe.find({})
+            // .populate("author")
+            .sort({ createdAt: "desc" })
+            res.status(200).json(recipes)
+    }catch(err){
+        res.status(500).json({err: err.message})
+    }
+})
+
 module.exports = router
