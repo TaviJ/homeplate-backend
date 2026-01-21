@@ -39,4 +39,23 @@ router.get("/:recipeId", async(req,res)=>{
     }
 })
 
+// Update specific recipe
+router.put("/:recipeId", async (req,res)=>{
+    try{
+        const recipe = await Recipe.findById(req.params.recipeId);
+
+        // if(!recipe.author.equals(req.user._id)){
+        //     return res.status(403).send("You're not allowed to update this recipe")
+        // }
+
+        const updateRecipe = await Recipe.findByIdAndUpdate(req.params.recipeId, req.body,{new:true})
+        // updateRecipe._doc.author = req.user;
+
+        res.status(200).json(updateRecipe)
+
+    }catch (err){
+        return res.status(500).json({err: err.message})
+    }
+})
+
 module.exports = router
