@@ -33,6 +33,8 @@ router.get("/",verifyToken, async(req,res)=>{
 router.get("/:recipeId",verifyToken, async(req,res)=>{
     try{
         const recipe = await Recipe.findById(req.params.recipeId).populate("author");
+        if(!recipe) return res.status(404).json({err: "Recipe not found"})
+
         res.status(200).json(recipe);
     }catch (err){
         res.status(500).json({err: err.message})
@@ -43,7 +45,8 @@ router.get("/:recipeId",verifyToken, async(req,res)=>{
 router.put("/:recipeId",verifyToken, async (req,res)=>{
     try{
         const recipe = await Recipe.findById(req.params.recipeId);
-
+        if(!recipe) return res.status(404).json({err: "Recipe not found"})
+        
         if(!recipe.author.equals(req.user._id)){
             return res.status(403).send("You're not allowed to update this recipe")
         }
@@ -62,6 +65,8 @@ router.put("/:recipeId",verifyToken, async (req,res)=>{
 router.delete("/:recipeId",verifyToken, async (req,res) => {
     try{
         const recipe = await Recipe.findById(req.params.recipeId)
+        if(!recipe) return res.status(404).json({err:"Recipe not found"})
+
         if(!recipe.author.equals(req.user._id)){
             return res.status(403).send("You're not alloewd to delete this recipe")
         }
@@ -78,6 +83,8 @@ router.post("/:recipeId/comments", verifyToken, async(req,res)=>{
     try{
         req.body.author= req.user._id;
         const recipe = await Recipe.findById(req.params.recipeId);
+        if(!recipe) return res.status(404).json({err:"Recipe not found"})
+
         recipe.comments.push(req.body);
         await recipe.save();
 
@@ -93,7 +100,9 @@ router.post("/:recipeId/comments", verifyToken, async(req,res)=>{
 // Get comments for a specific recipe
 router.get("/:recipeId", verifyToken, async(req, res)=>{
     try{
-        const recipe = Recipe.findById(req.params.recipeId).populate(["author","comments.author"]);
+        const recipe = await Recipe.findById(req.params.recipeId).populate(["author","comments.author"]);
+        if(!recipe) return res.status(404).json({err:"Recipe not found"});
+
         res.status(200).json(recipe);
     }catch(err){
         res.status(500).send({err: err.message})
