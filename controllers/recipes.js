@@ -1,6 +1,6 @@
 const express = require("express");
 const verifyToken = require("../middleware/verify-token.js")
-const  Recipe = require("../models/recipe.js")
+const  Recipe = require("../models/recipe.js");
 
 const router = express.Router();
 
@@ -82,13 +82,26 @@ router.post("/:recipeId/comments", verifyToken, async(req,res)=>{
         await recipe.save();
 
         const newComment = recipe.comments[recipe.comments.length -1]
-       newComment._doc.author = req.user;
+        newComment._doc.author = req.user;
 
         res.status(201).json(newComment)
     }catch (err){
         res.status(500).send({err: err.message})
     }
 })
+
+// Get comments for a specific recipe
+router.get("/:recipeId", verifyToken, async(req, res)=>{
+    try{
+        const recipe = Recipe.findById(req.params.recipeId).populate(["author","comments.author"]);
+        res.status(200).json(recipe);
+    }catch(err){
+        res.status(500).send({err: err.message})
+    }
+    
+})
+
+
 
 
 module.exports = router
