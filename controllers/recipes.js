@@ -21,7 +21,7 @@ router.post("/",verifyToken, async(req,res)=>{
 router.get("/",verifyToken, async(req,res)=>{
     try{
         const recipes = await Recipe.find({})
-            .populate("author")
+            .populate("author","username")
             .sort({ createdAt: "desc" })
             res.status(200).json(recipes)
     }catch(err){
