@@ -64,6 +64,16 @@ router.post('/:userId/follow',verifyToken,async(req,res)=>{
   }
 })
 
+router.get('/me/following', verifyToken,async(req,res)=>{
+  try{
+    const userId = req.user._id;
+    const following = await getFollowingList(userId)
+    return res.status(200).json({following})
+  }catch(err){
+    return res.status(500).json({err: err.message})
+  }
+})
+
 router.get('/:userId/following', verifyToken, async(req,res)=>{
   try{
     const userId = req.params.userId;
@@ -74,7 +84,6 @@ router.get('/:userId/following', verifyToken, async(req,res)=>{
     return res.status(500).json({err:err.message})
   }
 })
-
 
 
 module.exports = router;
