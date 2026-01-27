@@ -5,7 +5,7 @@ const User = require('../models/user');
 const Follow = require('../models/follow')
 
 const verifyToken = require('../middleware/verify-token');
-const { populate } = require('../models/recipe');
+
 
 const getFollowList = async ({filter, populateField}) =>{
   const follows = await Follow.find(filter).populate(populateField, 'username');
@@ -17,10 +17,17 @@ const getFollowingList = async (userId) =>{
   const filter = {follower:userId}
   const populateField = 'following'
 
-  const following = getFollowList({filter,populateField})
+  const following = await getFollowList({filter,populateField})
   return following
 }
 
+const getFollowerList = async(userId) =>{
+  const filter = {following: userId}
+  const populateField = "follower"
+
+  const followers = await getFollowList({filter,populateField})
+  return followers
+}
 
 router.get('/', verifyToken, async (req, res) => {
   try {
@@ -78,6 +85,18 @@ router.get('/me/following', verifyToken,async(req,res)=>{
     const userId = req.user._id;
     const following = await getFollowingList(userId)
     return res.status(200).json({following})
+  }catch(err){
+    return res.status(500).json({err: err.message})
+  }
+})
+
+router.get('/me/followers', verifyToken, async(req,res)=>{
+  try{
+    const userId= req.user._id;
+    const followers = await getFollowerList(userId)
+
+    return res.status(200).json({followers})
+
   }catch(err){
     return res.status(500).json({err: err.message})
   }
