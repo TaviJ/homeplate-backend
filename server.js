@@ -15,7 +15,7 @@ const recipeRouter = require('./controllers/recipes');
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI);
-const PORT = process.env.PORT
+const PORT = process.env.PORT? process.env.PORT:3000;
 
 mongoose.connection.on('connected', () => {
   console.log(`Connected to MongoDB ${mongoose.connection.name}.`);
