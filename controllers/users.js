@@ -5,7 +5,6 @@ const User = require('../models/user');
 const Follow = require('../models/follow')
 
 const verifyToken = require('../middleware/verify-token');
-const { validate } = require('../models/recipe');
 
 
 const getFollowList = async ({filter, populateField}) =>{

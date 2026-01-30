@@ -29,10 +29,13 @@ router.get("/",verifyToken, async(req,res)=>{
     }
 })
 
-// Get specific recipe
+// Get specific recipe and comment
 router.get("/:recipeId",verifyToken, async(req,res)=>{
     try{
-        const recipe = await Recipe.findById(req.params.recipeId).populate("author");
+        const recipe = await Recipe.findById(req.params.recipeId)
+            .populate("author", "username")
+            .populate("comments.author", "username");
+
         if(!recipe) return res.status(404).json({err: "Recipe not found"})
 
         res.status(200).json(recipe);
@@ -97,18 +100,6 @@ router.post("/:recipeId/comments", verifyToken, async(req,res)=>{
     }
 })
 
-// Get comments for a specific recipe
-router.get("/:recipeId", verifyToken, async(req, res)=>{
-    try{
-        const recipe = await Recipe.findById(req.params.recipeId).populate(["author","comments.author"]);
-        if(!recipe) return res.status(404).json({err:"Recipe not found"});
-
-        res.status(200).json(recipe);
-    }catch(err){
-        res.status(500).send({err: err.message})
-    }
-    
-})
 
 // Add Like to specific recipe
 router.post("/:recipeId/likes", verifyToken, async(req,res)=>{
