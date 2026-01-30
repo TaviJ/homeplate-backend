@@ -57,6 +57,27 @@ router.get('/:userId', verifyToken, async (req, res) => {
     res.status(500).json({ err: err.message });
   }
 });
+router.put('/:userId', verifyToken, async (req, res) => {
+  try {
+    if (req.user._id !== req.params.userId) {
+      return res.status(403).json({ err: "Unauthorized" });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.userId,
+      { bio: req.body.bio }, // update bio
+      { new: true } // return the updated document
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ err: 'User not found' });
+    }
+
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    res.status(500).json({ err: err.message });
+  }
+});
 
 router.post('/:userId/follow',verifyToken,async(req,res)=>{
   try{
